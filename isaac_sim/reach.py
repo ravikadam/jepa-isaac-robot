@@ -6,7 +6,8 @@ import os
 os.environ.setdefault("OMNI_KIT_ACCEPT_EULA", "YES")
 
 parser = argparse.ArgumentParser()
-parser.add_argument("--vjepa-repo", required=True)
+parser.add_argument("--method", choices=("oracle", "random", "vjepa"), default="vjepa")
+parser.add_argument("--vjepa-repo")
 parser.add_argument("--headless", action="store_true")
 parser.add_argument("--episodes", type=int, default=5)
 parser.add_argument("--mpc-samples", type=int, default=64)
@@ -36,8 +37,7 @@ from isaacsim.robot.manipulators.examples.franka import Franka
 from isaacsim.robot.manipulators.examples.franka.controllers import RMPFlowController
 from isaacsim.sensors.camera import Camera
 
-from jepa_robot.control import EpisodeMetrics, reached
-from jepa_robot.vjepa_planner import VJepaPlanner
+from jepa_robot.control import CartesianAction, EpisodeMetrics, reached
 
 
 def settle(world, frames=30):
@@ -86,7 +86,13 @@ camera = Camera(
 camera.initialize()
 world.reset()
 controller = RMPFlowController(name="rmpflow", robot_articulation=robot)
-planner = VJepaPlanner(args.vjepa_repo, samples=args.mpc_samples)
+planner = None
+if args.method == "vjepa":
+    if not args.vjepa_repo:
+        parser.error("--vjepa-repo is required when --method=vjepa")
+    from jepa_robot.vjepa_planner import VJepaPlanner
+
+    planner = VJepaPlanner(args.vjepa_repo, samples=args.mpc_samples)
 
 rows = []
 rng = np.random.default_rng(7)
@@ -106,7 +112,7 @@ for episode in range(args.episodes):
     robot.set_joint_positions(initial_joints)
     controller.reset()
     settle(world)
-    goal_rep = planner.encode_goal(goal_rgb)
+    goal_rep = planner.encode_goal(goal_rgb) if planner else None
 
     latencies = []
     trace_path = run_dir / f"episode-{episode:03d}-trace.jsonl"
@@ -118,7 +124,16 @@ for episode in range(args.episodes):
             current_rgb = rgb(camera)
             pose = ee_pose(robot)
             started = time.perf_counter()
-            action = planner.act(current_rgb, pose, goal_rep)
+            if args.method == "vjepa":
+                action = planner.act(current_rgb, pose, goal_rep)
+            elif args.method == "oracle":
+                action = CartesianAction.from_sequence(
+                    [*(target_xyz - pose[:3]), 0.0, 0.0, 0.0, 0.0]
+                )
+            else:
+                action = CartesianAction.from_sequence(
+                    [*rng.uniform(-0.05, 0.05, size=3), 0.0, 0.0, 0.0, 0.0]
+                )
             latencies.append((time.perf_counter() - started) * 1000)
             commanded_xyz = pose[:3] + action.translation
             drive_to(world, robot, controller, commanded_xyz)
@@ -140,7 +155,7 @@ for episode in range(args.episodes):
     final_xyz = robot.end_effector.get_world_pose()[0]
     Image.fromarray(rgb(camera)).save(run_dir / f"episode-{episode:03d}-final.png")
     metric = EpisodeMetrics(
-        seed=episode, method="vjepa", success=success, steps=step + 1,
+        seed=episode, method=args.method, success=success, steps=step + 1,
         final_distance_m=float(np.linalg.norm(final_xyz - target_xyz)),
         mean_planning_ms=float(np.mean(latencies)),
     )
