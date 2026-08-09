@@ -3,8 +3,7 @@ name = "jepa-isaac-reach"
 version = "0.1.0"
 description = "A small V-JEPA 2-AC image-goal reaching experiment for Isaac Sim"
 requires-python = ">=3.10"
-dependencies = ["numpy>=1.24"]
+dependencies = ["numpy>=1.24", "Pillow>=10", "imageio>=2.34", "imageio-ffmpeg>=0.6"]
 
 [tool.pytest.ini_options]
 pythonpath = ["src"]
-

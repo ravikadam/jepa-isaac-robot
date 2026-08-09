@@ -3,6 +3,16 @@
 This repository is a minimal experiment for testing whether Meta's action-conditioned
 V-JEPA world model can guide a Franka arm in NVIDIA Isaac Sim.
 
+## Experiment artifacts
+
+- [Experimentation results and installation lessons](docs/experimentation-results.md)
+- [V-JEPA run video](https://github.com/ravikadam/jepa-isaac-robot/releases/download/v0.1.0/vjepa-isaac-reach.mp4)
+- [Oracle run video](https://github.com/ravikadam/jepa-isaac-robot/releases/download/v0.1.0/oracle-isaac-reach.mp4)
+- [Release page](https://github.com/ravikadam/jepa-isaac-robot/releases/tag/v0.1.0)
+
+In plain language, the oracle is the robot using a cheat sheet: Isaac Sim reveals
+the cube's exact coordinates. V-JEPA must instead infer movements from images.
+
 ## Challenge
 
 A fixed RGB camera observes a Franka Panda and a colored target cube. The task is

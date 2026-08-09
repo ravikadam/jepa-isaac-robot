@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import argparse
+import csv
 import json
 from pathlib import Path
 
@@ -25,6 +26,9 @@ def main():
     prefix = f"episode-{args.episode:03d}"
     goal = Image.open(args.run_dir / f"{prefix}-goal.png").convert("RGB")
     trace = [json.loads(line) for line in (args.run_dir / f"{prefix}-trace.jsonl").read_text().splitlines()]
+    with (args.run_dir / "metrics.csv").open(newline="") as handle:
+        method = next(csv.DictReader(handle))["method"]
+    method_label = {"vjepa": "V-JEPA PLANNER", "oracle": "ORACLE CONTROLLER", "random": "RANDOM BASELINE"}[method]
     output_dir = args.run_dir / f"{prefix}-demo-frames"
     output_dir.mkdir(exist_ok=True)
     title, body, mono = font(34), font(23), font(21)
@@ -35,11 +39,11 @@ def main():
         current = current.resize((480, 480)); goal_img = goal.resize((320, 320))
         canvas.paste(current, (42, 118)); canvas.paste(goal_img, (552, 118))
         draw = ImageDraw.Draw(canvas)
-        draw.text((42, 34), "V-JEPA 2-AC × Isaac Sim", font=title, fill="#f4f8ff")
+        draw.text((42, 34), f"{method_label} × Isaac Sim", font=title, fill="#f4f8ff")
         draw.text((42, 82), "LIVE ROBOT CAMERA", font=body, fill="#6ee7ff")
         draw.text((552, 82), "VISUAL GOAL", font=body, fill="#a7f3d0")
         draw.rounded_rectangle((902, 82, 1240, 598), 18, fill="#101d30", outline="#263a55", width=2)
-        draw.text((930, 112), "JEPA PLANNER", font=body, fill="#fbbf24")
+        draw.text((930, 112), method_label, font=body, fill="#fbbf24")
         action = item["action_xyz"]
         lines = [
             f"step       {item['step']:02d}",

@@ -1,8 +1,9 @@
-# I Gave V-JEPA 2-AC a Robot Body: Visual Planning in NVIDIA Isaac Sim
+# Experimentation Results: I Gave V-JEPA 2-AC a Robot Body in NVIDIA Isaac Sim
 
-> Draft status: replace bracketed result fields after the reproducible run completes.
+Videos:
 
-Demo video: [DEMO_VIDEO_URL]
+- [V-JEPA visual-planning run](https://github.com/ravikadam/jepa-isaac-robot/releases/download/v0.1.0/vjepa-isaac-reach.mp4)
+- [Oracle coordinate-controller run](https://github.com/ravikadam/jepa-isaac-robot/releases/download/v0.1.0/oracle-isaac-reach.mp4)
 
 Code and reproduction guide: https://github.com/ravikadam/jepa-isaac-robot
 
@@ -63,6 +64,10 @@ In code, each control cycle is deliberately small and observable:
 
 ## What the oracle does when JEPA is absent
 
+In everyday language, the oracle lets the robot use a cheat sheet. JEPA must look
+at camera images and infer which movement might help. The oracle can ask Isaac Sim
+for the cube's exact location, so it already knows the correct direction to move.
+
 The oracle answers a useful control question: can the simulated robot and its motion
 controller complete the task when perception and visual planning are removed? Isaac
 Sim already knows the cube's exact `(x, y, z)` position and the gripper's current
@@ -117,21 +122,35 @@ and validate the scene with a cheap oracle before loading JEPA.
 
 ## What the experiment cost
 
-At publication time the RunPod billing record for this experiment was [ACTUAL_COST],
+At publication time the RunPod billing record for this experiment was **$2.65**,
 including failed and overlapping pods. A clean run on the final RTX 5090 setup would
-have cost approximately [CLEAN_PATH_COST]: [CLEAN_PATH_HOURS] hours at roughly
-[HOURLY_RATE] per hour. The difference paid for diagnosis—principally the generic
+have cost approximately **$0.50**: about **0.5 hours** at the observed
+**$1.004 per hour**. That estimate allows time to install the pinned dependencies,
+download the checkpoint once, warm Isaac, run the three trials, and transfer the
+artifacts. The difference paid for diagnosis—principally the generic
 container with incompatible Vulkan, repeated startup attempts, and overlap while the
 official container was being validated. These figures cover cloud compute and pod
-storage, not human time. Exact timestamps and the final calculator are included in
-the repository so readers can substitute current RunPod pricing.
+storage, not human time, and current RunPod prices may differ.
 
 ## Results
 
-Across [N] seeded reaching episodes, the JEPA planner succeeded in [SUCCESS_RATE]
-of trials, with median final gripper-to-target distance [DISTANCE] m and median
-planning latency [LATENCY] ms. The coordinate-aware RMPFlow oracle achieved
-[ORACLE], while random Cartesian actions achieved [RANDOM].
+This integration run used one identical seeded target per method and a 60-step
+budget. The coordinate-aware oracle succeeded at step 44 with a final distance of
+**0.045 m** and **0.033 ms** mean planning overhead. V-JEPA completed all 60
+action-conditioned planning cycles but did not reach the target; it finished at
+**0.795 m**, with **966 ms** mean planning latency. Random Cartesian actions also
+failed, finishing at **0.772 m** with **0.049 ms** planning overhead.
+
+| Method | Success | Steps | Final distance | Mean planning time |
+|---|---:|---:|---:|---:|
+| Oracle | Yes | 44 | 0.045 m | 0.033 ms |
+| V-JEPA 2-AC | No | 60 | 0.795 m | 966 ms |
+| Random | No | 60 | 0.772 m | 0.049 ms |
+
+V-JEPA performing slightly worse than this random seed means this is not evidence
+of a successful zero-shot policy. It is evidence that the V-JEPA-to-Isaac interface
+works and that the uncalibrated domain transfer does not. More seeds are required
+before making a statistical comparison.
 
 The most important limitation is domain shift. V-JEPA 2-AC was trained on real DROID
 camera trajectories, not this synthetic Isaac Sim camera. A failure is therefore a
