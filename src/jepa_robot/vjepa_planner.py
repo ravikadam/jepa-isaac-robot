@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import os
 import sys
 from pathlib import Path
 
@@ -18,11 +19,18 @@ class VJepaPlanner:
         sys.path.insert(0, str(repo_path))
         sys.path.insert(0, str(repo_path / "notebooks"))
 
+        import hubconf
         import torch
         from app.vjepa_droid.transforms import make_transforms
         from utils.world_model_wrapper import WorldModel
 
-        encoder, predictor = torch.hub.load(str(repo_path), "vjepa2_ac_vit_giant", source="local")
+        # Meta's repository occasionally points this constant at a localhost
+        # test server. Select the documented public checkpoint host explicitly,
+        # while leaving an override for mirrors and offline deployments.
+        hubconf.VJEPA_BASE_URL = os.environ.get(
+            "VJEPA_BASE_URL", "https://dl.fbaipublicfiles.com/vjepa2"
+        )
+        encoder, predictor = hubconf.vjepa2_ac_vit_giant()
         encoder, predictor = encoder.to(device).eval(), predictor.to(device).eval()
         crop_size = 256
         transform = make_transforms(
@@ -59,4 +67,3 @@ class VJepaPlanner:
             pose = self.torch.as_tensor(pose7, device=self.model.device, dtype=rep.dtype).view(1, 1, 7)
             action = self.model.infer_next_action(rep, pose, goal)[0].detach().cpu().numpy()
         return CartesianAction.from_sequence(action)
-
