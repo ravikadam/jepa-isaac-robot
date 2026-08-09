@@ -18,6 +18,14 @@ from isaacsim import SimulationApp
 
 simulation_app = SimulationApp({"headless": args.headless})
 
+# Isaac Sim 6 keeps this stable Franka/RMPflow example API as an opt-in
+# extension. Enabling it explicitly also remains harmless on older releases.
+import omni.kit.app
+
+omni.kit.app.get_app().get_extension_manager().set_extension_enabled_immediate(
+    "isaacsim.robot.manipulators.examples", True
+)
+
 import csv
 import json
 import sys
