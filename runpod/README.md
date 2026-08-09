@@ -1,5 +1,10 @@
 # RunPod deployment notes
 
+Result videos:
+
+- [V-JEPA visual-planning run](https://github.com/ravikadam/jepa-isaac-robot/releases/download/v0.1.0/vjepa-isaac-reach.mp4)
+- [Oracle coordinate-controller run](https://github.com/ravikadam/jepa-isaac-robot/releases/download/v0.1.0/oracle-isaac-reach.mp4)
+
 Do not leave a pod running after the experiment, and do not overlap replacement
 pods longer than needed for a compatibility check.
 

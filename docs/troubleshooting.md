@@ -1,5 +1,10 @@
 # Troubleshooting: failures we hit and how to avoid them
 
+Result videos:
+
+- [V-JEPA visual-planning run](https://github.com/ravikadam/jepa-isaac-robot/releases/download/v0.1.0/vjepa-isaac-reach.mp4)
+- [Oracle coordinate-controller run](https://github.com/ravikadam/jepa-isaac-robot/releases/download/v0.1.0/oracle-isaac-reach.mp4)
+
 This is a record of actual failures from the RunPod experiment. Start with the
 preflight checklist; use the table below when a symptom appears.
 

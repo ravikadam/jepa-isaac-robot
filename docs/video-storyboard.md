@@ -1,5 +1,10 @@
 # Demo video storyboard (target: 2:30)
 
+Published result videos:
+
+- [V-JEPA visual-planning run](https://github.com/ravikadam/jepa-isaac-robot/releases/download/v0.1.0/vjepa-isaac-reach.mp4)
+- [Oracle coordinate-controller run](https://github.com/ravikadam/jepa-isaac-robot/releases/download/v0.1.0/oracle-isaac-reach.mp4)
+
 | Time | Visual | Narration |
 |---|---|---|
 | 0:00–0:10 | Best successful reach, title overlay | “Can a robot move toward what success looks like—without target coordinates?” |
