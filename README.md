@@ -75,3 +75,9 @@ only add randomization after the basic run succeeds.
 - [Isaac Sim installation](https://docs.isaacsim.omniverse.nvidia.com/latest/installation/quick-install.html)
 - [Isaac Sim Franka pick-and-place example](https://docs.isaacsim.omniverse.nvidia.com/5.1.0/examples/manipulation_franka_pick_place.html)
 
+## Troubleshooting before spending GPU time
+
+Read [the failure guide](docs/troubleshooting.md) before creating a pod. It records
+the exact permission, Python, Git, Vulkan, CUDA-wheel, Isaac Sim 6 extension, and
+checkpoint-URL problems encountered while building this demo, with their fixes and
+prevention checks.
