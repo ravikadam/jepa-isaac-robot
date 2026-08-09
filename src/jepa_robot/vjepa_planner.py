@@ -17,12 +17,14 @@ class VJepaPlanner:
         if not (repo_path / "hubconf.py").exists():
             raise FileNotFoundError(f"Not a V-JEPA 2 checkout: {repo_path}")
         sys.path.insert(0, str(repo_path))
-        sys.path.insert(0, str(repo_path / "notebooks"))
 
         import hubconf
         import torch
         from app.vjepa_droid.transforms import make_transforms
-        from utils.world_model_wrapper import WorldModel
+        # Use the repository-qualified namespace. Isaac Sim imports its own
+        # top-level `utils` package during startup, which would otherwise shadow
+        # V-JEPA's notebooks/utils directory.
+        from notebooks.utils.world_model_wrapper import WorldModel
 
         # Meta's repository occasionally points this constant at a localhost
         # test server. Select the documented public checkpoint host explicitly,
