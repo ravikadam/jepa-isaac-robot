@@ -42,6 +42,8 @@ same seeds, so JEPA, an oracle, and random actions can be compared on the same t
 
 ## Architecture
 
+![V-JEPA and oracle architecture](https://raw.githubusercontent.com/ravikadam/jepa-isaac-robot/main/docs/architecture.svg)
+
 ```text
 live RGB ──► V-JEPA encoder ──► current latent ─┐
                                                 ├─► CEM/MPC ─► Δx,Δy,Δz ─► RMPFlow ─► Franka
@@ -58,6 +60,24 @@ In code, each control cycle is deliberately small and observable:
 4. The lowest-cost candidate becomes a Cartesian action delta.
 5. Isaac RMPFlow converts that requested end-effector pose into safe joint commands.
 6. A new image closes the feedback loop; every action, latency, and distance is logged.
+
+## What the oracle does when JEPA is absent
+
+The oracle answers a useful control question: can the simulated robot and its motion
+controller complete the task when perception and visual planning are removed? Isaac
+Sim already knows the cube's exact `(x, y, z)` position and the gripper's current
+position. The oracle subtracts the latter from the former, clips that Cartesian
+movement to the same maximum step size used by JEPA, keeps orientation and gripper
+state fixed, and sends the resulting target pose to RMPFlow.
+
+RMPFlow then performs exactly the same job it performs for JEPA: converting the
+requested end-effector pose into joint commands while respecting the robot model.
+The difference is only who chooses the target pose. JEPA chooses it by comparing
+predicted visual futures with a goal image; the oracle chooses it directly from
+privileged simulator coordinates. That makes the oracle an upper-bound and a
+diagnostic tool, not a fair vision-based competitor. If the oracle fails, the scene,
+controller, tolerance, or step budget is wrong. If the oracle succeeds but JEPA
+fails, the likely problem lies in visual/action alignment or domain shift.
 
 ## Why V-JEPA 2-AC instead of plain V-JEPA?
 

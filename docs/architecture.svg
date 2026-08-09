@@ -1,0 +1,45 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="680" viewBox="0 0 1200 680" role="img" aria-labelledby="title desc">
+  <title id="title">V-JEPA and oracle control architecture for Isaac Sim</title>
+  <desc id="desc">The V-JEPA path converts live and goal images into latent states and plans an action with CEM MPC. The oracle path reads target coordinates. Both send a Cartesian target to RMPFlow, which controls the Franka robot in Isaac Sim.</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#07111f"/><stop offset="1" stop-color="#101e35"/></linearGradient>
+    <linearGradient id="jepa" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#5946d2"/><stop offset="1" stop-color="#8a62e8"/></linearGradient>
+    <linearGradient id="sim" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#4b8f1d"/><stop offset="1" stop-color="#76b900"/></linearGradient>
+    <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%"><feDropShadow dx="0" dy="8" stdDeviation="9" flood-opacity=".28"/></filter>
+    <marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto"><path d="M0 0L10 5 0 10Z" fill="#9fb3cf"/></marker>
+    <style>
+      .title{font:700 30px Inter,Arial,sans-serif;fill:#f7fbff}.sub{font:400 16px Inter,Arial,sans-serif;fill:#9fb3cf}.label{font:700 18px Inter,Arial,sans-serif;fill:#fff}.small{font:400 14px Inter,Arial,sans-serif;fill:#dbe7f6}.tiny{font:600 12px Inter,Arial,sans-serif;fill:#9fb3cf;letter-spacing:.08em}.box{stroke:#ffffff;stroke-opacity:.13;stroke-width:1.5;filter:url(#shadow)}.line{fill:none;stroke:#9fb3cf;stroke-width:3;marker-end:url(#arrow)}
+    </style>
+  </defs>
+  <rect width="1200" height="680" rx="28" fill="url(#bg)"/>
+  <text x="60" y="62" class="title">One robot, two ways to choose the next movement</text>
+  <text x="60" y="91" class="sub">V-JEPA plans from pixels; the oracle uses simulator ground truth. Execution is identical.</text>
+
+  <text x="60" y="142" class="tiny">VISUAL PLANNER — NO TARGET COORDINATES</text>
+  <rect x="60" y="164" width="170" height="88" rx="16" fill="#19304b" class="box"/>
+  <text x="145" y="199" text-anchor="middle" class="label">Live RGB</text><text x="145" y="225" text-anchor="middle" class="small">Isaac camera</text>
+  <rect x="60" y="280" width="170" height="88" rx="16" fill="#19304b" class="box"/>
+  <text x="145" y="315" text-anchor="middle" class="label">Goal RGB</text><text x="145" y="341" text-anchor="middle" class="small">Desired outcome</text>
+  <rect x="295" y="194" width="190" height="142" rx="18" fill="url(#jepa)" class="box"/>
+  <text x="390" y="241" text-anchor="middle" class="label">V-JEPA encoder</text><text x="390" y="270" text-anchor="middle" class="small">Current latent</text><text x="390" y="294" text-anchor="middle" class="small">Goal latent</text>
+  <rect x="550" y="194" width="210" height="142" rx="18" fill="#4335a3" class="box"/>
+  <text x="655" y="232" text-anchor="middle" class="label">Action predictor</text><text x="655" y="261" text-anchor="middle" class="small">CEM / MPC samples</text><text x="655" y="285" text-anchor="middle" class="small">7D candidate actions</text><text x="655" y="309" text-anchor="middle" class="small">Choose closest latent</text>
+  <path d="M230 208H274Q285 208 295 225" class="line"/><path d="M230 324H274Q285 324 295 307" class="line"/><path d="M485 265H550" class="line"/>
+
+  <text x="60" y="430" class="tiny">ORACLE BASELINE — SIMULATOR PRIVILEGE</text>
+  <rect x="60" y="451" width="220" height="96" rx="16" fill="#8a4a20" class="box"/>
+  <text x="170" y="488" text-anchor="middle" class="label">Target XYZ</text><text x="170" y="514" text-anchor="middle" class="small">Ground-truth cube pose</text>
+  <rect x="345" y="451" width="240" height="96" rx="16" fill="#6e3b1c" class="box"/>
+  <text x="465" y="488" text-anchor="middle" class="label">Cartesian difference</text><text x="465" y="514" text-anchor="middle" class="small">clip(target − gripper)</text>
+  <path d="M280 499H345" class="line"/>
+
+  <rect x="825" y="232" width="160" height="104" rx="18" fill="url(#sim)" class="box"/>
+  <text x="905" y="271" text-anchor="middle" class="label">RMPFlow</text><text x="905" y="298" text-anchor="middle" class="small">Pose → joints</text>
+  <rect x="1030" y="232" width="120" height="104" rx="18" fill="#346514" class="box"/>
+  <text x="1090" y="271" text-anchor="middle" class="label">Franka</text><text x="1090" y="298" text-anchor="middle" class="small">Isaac Sim</text>
+  <path d="M760 265H825" class="line"/><path d="M585 499H775Q805 499 805 469V319Q805 284 825 284" class="line"/><path d="M985 284H1030" class="line"/>
+  <path d="M1090 336V592Q1090 617 1065 617H55Q30 617 30 592V208H60" class="line"/>
+  <text x="605" y="643" text-anchor="middle" class="small">Feedback loop: execute movement → render next camera frame → plan again</text>
+  <rect x="817" y="371" width="176" height="52" rx="26" fill="#142944" stroke="#294866"/>
+  <text x="905" y="403" text-anchor="middle" class="small">Δx, Δy, Δz + pose</text>
+</svg>

@@ -15,6 +15,8 @@ is closest to the goal image.
 This tests a real JEPA capability: action-conditioned prediction and image-goal
 planning. Plain V-JEPA is only a video encoder and cannot choose robot actions.
 
+![Control architecture](docs/architecture.svg)
+
 ## Hardware and software
 
 - An RTX Linux/Windows machine. Isaac Sim does not run locally on Apple Silicon.
